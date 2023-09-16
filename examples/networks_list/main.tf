@@ -8,8 +8,8 @@ terraform {
 
 provider "istiolocal" {}
 
-data "istiolocal_networks" "docker_networks" {}
+data "istiolocal_networks" "networks" {}
 
 output "docker_networks" {
-  value = data.istiolocal_networks.docker_networks
+  value = data.istiolocal_networks.networks
 }

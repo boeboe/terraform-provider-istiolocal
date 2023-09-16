@@ -20,13 +20,13 @@ resource "istiolocal_network" "network_two" {
   gateway = "192.168.201.1"
 }
 
-resource "istiolocal_network" "network_import" {
-}
+# resource "istiolocal_network" "network_import" {
+# }
 
 output "docker_networks" {
   value = [
     istiolocal_network.network_one,
     istiolocal_network.network_two,
-    istiolocal_network.network_import
+    # istiolocal_network.network_import
   ]
 }
