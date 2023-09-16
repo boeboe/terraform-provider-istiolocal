@@ -35,8 +35,8 @@ func getDockerNetworks(t *testing.T) []dockerNetwork {
 	shortIDs := strings.Split(lsOutput, "\n")
 
 	// Then we fetch de details of the docker networks
-	inspectArgs := append([]string{
-		"network", "inspect", "--format={{.ID}} {{.Name}} {{range .IPAM.Config}}{{.Subnet}} {{.Gateway}}{{end}}"},
+	inspectArgs := append(
+		[]string{"network", "inspect", "--format={{.ID}} {{.Name}} {{range .IPAM.Config}}{{.Subnet}} {{.Gateway}}{{end}}"},
 		shortIDs[:len(shortIDs)-1]...,
 	)
 	inspectCmd := exec.Command("docker", inspectArgs...)
