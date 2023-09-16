@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
@@ -65,6 +66,9 @@ func (d *networksDataSource) Configure(ctx context.Context, req datasource.Confi
 func (d *networksDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
 			"networks": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -91,6 +95,7 @@ func (d *networksDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 // networksDataSourceModel maps the data source schema data.
 type networksDataSourceModel struct {
 	Networks []networksModel `tfsdk:"networks"`
+	ID       tfTypes.String  `tfsdk:"id"`
 }
 
 // networksModel maps networks schema data.
@@ -118,6 +123,11 @@ func (d *networksDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
+	// Sort the networks by name in alphabetic order
+	sort.Slice(networks[:], func(i, j int) bool {
+		return networks[i].Name < networks[j].Name
+	})
+
 	// Map response body to model
 	for _, network := range networks {
 		networkState := networksModel{
@@ -129,6 +139,9 @@ func (d *networksDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 		state.Networks = append(state.Networks, networkState)
 	}
+
+	// Needed for testing only
+	state.ID = tfTypes.StringValue("placeholder")
 
 	// Set state
 	diags := resp.State.Set(ctx, &state)
